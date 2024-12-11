@@ -1,53 +1,21 @@
-import json
-import os.path
+import movie
+import tkinter as tk
 
 
-class Movie:
-    def __init__(self, name, type, status, rate, note):
-        self.name = name
-        self.type = type
-        self.status = status
-        self.rate = rate
-        self.note = note
+film = movie.Movie("Dune 2", "Kurgu", "Izlenecek", 4, "kesin izle").getMovie()
+root = tk.Tk()
+root.title('Favori Film Uygulaman')
 
-    def getMovie(self):
-        return {
-            "name": self.name,
-            "type": self.type,
-            "status": self.status,
-            "rate": self.rate,
-            "note": self.note
-        }
+window_width = 1200
+window_height = 800
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+center_x = int(screen_width/2 - window_width / 2)
+center_y = int(screen_height/2 - window_height / 2)
 
+root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
-def saveMovie(movie):
-    if (not os.path.exists("movies.json")):
-        with open("movies.json", "x") as dosya:
-            json.dump({
-                "movies": []
-            }, dosya)
+root.iconbitmap('./images/movie .ico')
 
-    with open("movies.json") as moviesJson:
-
-        data = list(json.load(moviesJson)["movies"])
-        data.append(movie)
-        with open('movies.json', 'w') as moviesJson:
-            json.dump({
-                "movies": data
-            }, moviesJson)
-
-
-def getMovies():
-    try:
-        with open("movies.json") as moviesJson:
-            data = list(json.load(moviesJson)["movies"])
-            return data
-    except FileNotFoundError:
-        print("Kaydedilmis film yok")
-
-
-film1 = Movie("Dune 2", "Kurgu", "Izlenecek", 4, "kesin izle").getMovie()
-
-m = getMovies()
-
-saveMovie(film1)
+root.mainloop()
+movie.saveMovie(film)
