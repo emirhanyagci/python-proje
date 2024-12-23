@@ -30,8 +30,11 @@ def saveMovie(movie):
             }, dosya)
 
     with open("movies.json") as moviesJson:
-
-        data = list(json.load(moviesJson)["movies"])
+        data = []
+        try :
+             data = list(json.load(moviesJson)["movies"])
+        except :
+            print("Kaydedilmis film/dizi yok")
         data.append(movie)
         with open('movies.json', 'w') as moviesJson:
             json.dump({
@@ -45,8 +48,9 @@ def getMovies():
         with open("movies.json") as moviesJson:
             data = list(json.load(moviesJson)["movies"])
             return data
-    except FileNotFoundError:
+    except:
         print("Kaydedilmis film yok")
+        return []
    
 def update_status():
     movies = getMovies()
@@ -65,24 +69,20 @@ def update_status():
                 return
     print("Dizi veya film bulunamadı")
 
-def deleteMovies():
+def deleteMovie(name):
     movies=getMovies()
-    name = input("Silinecek dizi veya filmi girin:")
+  
     for item in movies:
         if item["name"]==name:
-            confirm = input("Bu ögeyi silmek istediğinizden emin misiniz ?")
-            if confirm== 'Evet' or confirm== 'evet':
-                movies.remove(item)
-                with open('movies.json', 'w') as moviesJson:
-                    json.dump({"movies": movies}, moviesJson)
-                print(f"'{name}' başarıyla silindi.")
-                return
-            else:
-                print("Silme işlemi iptal edildi.")
-                return
+            movies.remove(item)
+            with open('movies.json', 'w') as moviesJson:
+                json.dump({"movies": movies}, moviesJson)
+            print(f"'{name}' başarıyla silindi.")
+            return
+            
     print("Dizi veya film bulunamadı.")
 
-def add_movie(name,type,status,note):
-    addedmovie=Movie(name,type,status,rate=0,note=note).getMovie()
+def add_movie(name,type,rate,status,note):
+    addedmovie=Movie(name,type,status,rate,note=note).getMovie()
     saveMovie(addedmovie)
 

@@ -1,9 +1,10 @@
 from movie import getMovies,add_movie
 import newMovie
+import json
 import tkinter as tk
 from tkinter import ttk,messagebox
 from tkinter.messagebox import showinfo
-
+from editMovie import openEditMovie
 root = tk.Tk()
 root.title('Favori Film Uygulaman')
 
@@ -17,13 +18,15 @@ center_y = int(screen_height/2 - window_height / 2)
 root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
 root.iconbitmap('./images/movie.ico')
-
+selectedMovie = []
 header = tk.Frame(root, bg="white", height=50)
 header.pack(fill=tk.X, side=tk.TOP)
 header_label = tk.Label(header, text="Kaydettiklerim", bg="white", font=("Arial", 14, "bold"))
 header_label.pack(side=tk.LEFT, padx=20, pady=10)
 
 
+edit_button = tk.Button(header, text="Duzenle", bg="gray", fg="white",padx=10, font=("Arial", 12, "bold"),command=lambda : openEditMovie(root,selectedMovie,saveFn=add_movie,fetchFn=fetchMovies))
+edit_button.pack(side=tk.RIGHT, padx=20, pady=10)
 add_button = tk.Button(header, text="+", bg="green", fg="white",padx=10, font=("Arial", 12, "bold"),command=lambda : newMovie.open_form(root,saveFn=add_movie,fetchFn=fetchMovies))
 add_button.pack(side=tk.RIGHT, padx=20, pady=10)
 
@@ -53,16 +56,21 @@ def fetchMovies():
     for movie in movies:
         print(movie)
         tree.insert("", tk.END, values=(movie["name"],movie["type"],movie["status"],movie["rate"],movie["note"]))
-    
-selectedMovie = ""
+def remove_all():
+    tree.delete(*tree.get_children())
+    with open("movies.json", "w") as file:
+        json.dump({"movies": []}, file)
+
+
+
 fetchMovies()
 def item_selected(event):
+    global selectedMovie
     for selected_item in tree.selection():
         item = tree.item(selected_item)
         record = list(item['values'])
-        record = [str(i) for i in record]
-
-        showinfo(title='Information', message=','.join(record))
+        selectedMovie = record;
+       
 
 
 tree.bind('<<TreeviewSelect>>', item_selected)
